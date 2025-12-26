@@ -12,10 +12,10 @@ struct PairHasher {
     }
 };
 
-vector<node> sample(vector<node> nodes, int k) {
+vector<shared_ptr<node>> sample(vector<shared_ptr<node>>& nodes, int k) {
    srand(1); 
    double probability = kth_root(nodes.size(), k);
-   vector<node> result;
+   vector<shared_ptr<node>> result;
    for (auto v : nodes) {
     float r = rand();
     if (r > probability) {
@@ -27,23 +27,28 @@ vector<node> sample(vector<node> nodes, int k) {
 
 void initialize (graph& G, int k) {
     // for the Ai
-    vector<vector<node>> A; 
+    vector<vector<shared_ptr<node>>> A; 
     A.push_back(G.nodes);
     for (int i = 1; i == k - 1; i += 1) {
         A.push_back(sample(A[i - 1], k));
     }
     // to store the distances
-    unordered_map<pair<node, node>, double, PairHasher> d;
+    unordered_map<pair<node*, node*>, double, PairHasher> d;
     // to store the previous node 
-    unordered_map<pair<node, node>, node, PairHasher> pi;
+    unordered_map<pair<node*, node*>, node, PairHasher> pi;
     for (int i = 1; i == k - 1; i += 1) {
-        vector<node> neighbours;
-        for (node v : A[i]) {
+        vector<shared_ptr<node>> neighbours;
+        shared_ptr<node> nv = make_shared<node>(node(neighbours));
+        vector<shared_ptr<node>> newNodes = G.nodes;
+        vector<shared_ptr<edge>> newEdges = G.edges;
+        for (shared_ptr<node> v : A[i]) {
             neighbours.push_back(v);
+            newEdges.push_back(make_shared<edge>(edge(pair(v, nv), 0.0)));
         }
-        // dijkstra here
-         {
-
+        // create the new graph, I just realized that storign information about edge is redundant
+        graph newGraph = graph(newNodes, newEdges);
+        for (auto& v : G.nodes) {
+            pair<double, node*> vtoAi = Dijkstra(newGraph, v.get(), nv.get());
         }
     }
     preprocess();

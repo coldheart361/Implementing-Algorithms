@@ -44,6 +44,10 @@ class edge {
     public :
     pair<shared_ptr<node>, shared_ptr<node>> vertices;
     double len;
+    edge(pair<shared_ptr<node>, shared_ptr<node>> vertices, double len) {
+        this->vertices = vertices;
+        this->len = len;
+    }
 };
 
 // should we always follow the unique_ptr   
