@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "vector": "cpp",
+        "queue": "cpp",
+        "limits": "cpp",
+        "unordered_map": "cpp",
+        "__node_handle": "cpp"
+    }
+}
