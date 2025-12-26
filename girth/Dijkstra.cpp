@@ -20,12 +20,11 @@ pair<double, node*> Dijkstra(graph& G, node* source, node* target) {
     unordered_map<pair<node*, node*>, double, PairHasher> dist;
     dist[pair(source, source)] = 0;
     for (auto& e: G.edges) {
-        dist[pair(e.vertices.first, e.vertices.second)] = e.len;
-        dist[pair(e.vertices.second, e.vertices.first)] = e.len;
+        dist[pair(e->vertices.first.get(), e->vertices.second.get())] = e.get()->len;
+        dist[pair(e->vertices.second.get(), e->vertices.first.get())] = e.get()->len;
     }
     for (auto& v: G.nodes) {
-        node* u = &v;
-        dist[pair(source, u)] = INF; 
+        dist[pair(source, v.get())] = INF; 
     }
     auto comp = [source, &dist](node* u, node* v) {
         return dist[pair(source, u)] > dist[pair(source, v)]; 
@@ -40,7 +39,8 @@ pair<double, node*> Dijkstra(graph& G, node* source, node* target) {
     if (curr == target) {
         break;
     }
-    for (node* v : curr->neighbours) {
+    for (shared_ptr<node> u : curr->neighbours) {
+        node* v = u.get();
         if (dist[pair(source, curr)] + dist[pair(curr, v)] < dist[pair(source, v)]) {
             dist[pair(source, v)] = dist[pair(source, curr)] + dist[pair(curr, v)];
         }
