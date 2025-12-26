@@ -38,7 +38,7 @@ class Matrix {
         for (int i = 0; i < R; i += 1) {
             for (int j = 0; j < C; j += 1) {
                 if (absolute_value(matrix[i][j]) > curr) {
-                    curr = absolute_value(matrix[i][j]) 
+                    curr = absolute_value(matrix[i][j]); 
                 }
             }
         }
@@ -100,7 +100,6 @@ class Matrix {
         }
     } 
     Matrix Strassen_Multiply(Matrix A, Matrix B) {
-// Create Matrix objects for A and B for easier operation chaining
 
         int n = A.R;
         int k = n / 2; // Size of sub-matrices
@@ -194,4 +193,4 @@ class Matrix {
        }
        return Matrix(ans);
     }
-}
+};
