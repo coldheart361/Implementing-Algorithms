@@ -19,11 +19,13 @@ const double INF = numeric_limits<double>::infinity();
 pair<double, node*> Dijkstra(graph& G, node* source, node* target) {
     unordered_map<pair<node*, node*>, double, PairHasher> dist;
     dist[pair(source, source)] = 0;
-    for (auto& e: G.edges) {
-        dist[pair(e->vertices.first.get(), e->vertices.second.get())] = e.get()->len;
-        dist[pair(e->vertices.second.get(), e->vertices.first.get())] = e.get()->len;
+    for (auto& u: *G.nodes) {
+        for (auto& v: u->neighbours) {
+            dist[pair(u.get(), v->first.get())] = v->second;
+            dist[pair(v->first.get(), u.get())] = v->second;
+        }
     }
-    for (auto& v: G.nodes) {
+    for (auto& v: *G.nodes) {
         dist[pair(source, v.get())] = INF; 
     }
     auto comp = [source, &dist](node* u, node* v) {
@@ -39,8 +41,8 @@ pair<double, node*> Dijkstra(graph& G, node* source, node* target) {
     if (curr == target) {
         break;
     }
-    for (shared_ptr<node> u : curr->neighbours) {
-        node* v = u.get();
+    for (auto& u : curr->neighbours) {
+        node* v = u->first.get();
         if (dist[pair(source, curr)] + dist[pair(curr, v)] < dist[pair(source, v)]) {
             dist[pair(source, v)] = dist[pair(source, curr)] + dist[pair(curr, v)];
         }
@@ -50,3 +52,35 @@ pair<double, node*> Dijkstra(graph& G, node* source, node* target) {
    return pair(dist[pair(source, target)], predecessor);
 }
 
+// the goal here is to find the cluster vertex using the modified dijkstra from Thorup Zwick
+pair<double, node*> ModifiedDijkstra(graph& G, 
+    node* source, 
+    unordered_map<pair<node*, node*>, double, PairHasher>& dist,
+    unordered_map<pair<node*, int>, double, PairHasher>& NodeToSample) {
+    dist[pair(source, source)] = 0;
+    for (auto& u: *G.nodes) {
+        for (auto& v: u->neighbours) {
+            dist[pair(u.get(), v->first.get())] = v->second;
+            dist[pair(v->first.get(), u.get())] = v->second;
+        }
+    }
+    for (auto& v: *G.nodes) {
+        dist[pair(source, v.get())] = INF; 
+    }
+    priority_queue<node*, vector<node*>, decltype(comp)> pq(comp); 
+    pq.push(source);
+    node* predecessor;
+    while (!pq.empty()) {
+    node* curr = pq.top();
+    pq.pop();
+    for (auto& u : curr->neighbours) {
+        node* v = u->first.get();
+        if (distance[pair(source, v)] + u.second < NodeToSample[pair(v, v->mark)] 
+                && dist[pair(source, curr)] + dist[pair(curr, v)] < dist[pair(source, v)]) {
+            dist[pair(source, v)] = dist[pair(source, curr)] + dist[pair(curr, v)];
+        }
+    }
+    predecessor = curr;
+    }
+   return pair(dist[pair(source, target)], predecessor); 
+}

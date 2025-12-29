@@ -34,30 +34,19 @@ double kth_root(double x, int k) {
 
 class node {
     public : 
-    vector<shared_ptr<node>> neighbours;
-    node(vector<shared_ptr<node>>& neighbours) {
+    int mark;
+    vector<pair<shared_ptr<node>, double>*> neighbours;
+    node(vector<pair<shared_ptr<node>, double>*>& neighbours) {
         this->neighbours = neighbours;
-    }
-};
-
-class edge {
-    public :
-    pair<shared_ptr<node>, shared_ptr<node>> vertices;
-    double len;
-    edge(pair<shared_ptr<node>, shared_ptr<node>> vertices, double len) {
-        this->vertices = vertices;
-        this->len = len;
     }
 };
 
 // should we always follow the unique_ptr   
 class graph {
     public :
-    vector<shared_ptr<node>> nodes;
-    vector<shared_ptr<edge>> edges;
+    vector<shared_ptr<node>>* nodes;
     int sz;
-    graph(vector<shared_ptr<node>>& nodes, vector<shared_ptr<edge>>& edges) {
-        this->nodes = nodes;
-        this->edges = edges;
+    graph(vector<shared_ptr<node>>& nodes) {
+        this->nodes = &nodes;
     }
 };
